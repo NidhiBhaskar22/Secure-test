@@ -2,7 +2,7 @@
 
 ## **Overview**
 
-Secure-Test is a full-stack web application built using React (Vite) for the frontend and Node.js (Express) for the backend, with Prisma as the ORM and MySQL as the database.
+Secure-Test is a full-stack web application designed as a **proctoring platform that ensures secure and monitored online assessments**. It enables organizations and institutions to conduct remote exams with integrity by leveraging real-time monitoring features. **The platform is built using React (Vite) for the frontend and Node.js (Express) for the backend, with Prisma as the ORM and MySQL as the database.**
 
 ## **Tech Stack**
 
