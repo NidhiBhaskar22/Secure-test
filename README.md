@@ -6,13 +6,13 @@ Secure-Test is a full-stack web application built using React (Vite) for the fro
 
 ## **Tech Stack**
 
-## Frontend:
+#### Frontend:
 
 - Vite + React
 
 - Tailwind CSS
 
-## Backend:
+#### Backend:
 
 - Node.js + Express
 
@@ -20,7 +20,7 @@ Secure-Test is a full-stack web application built using React (Vite) for the fro
 
 - MySQL
 
-## **Setup Instructions**
+#### **Setup Instructions**
 
 **1. Clone the Repository**
 
@@ -29,23 +29,23 @@ cd Secure-test-main
 
 **2. Install Dependencies**
 
-## Frontend:
+#### Frontend:
 
 cd client
 npm install
 
-## Backend:
+#### Backend:
 
 cd ../server
 npm install
 
 **3. Configure Environment Variables**
 
-## Frontend (client/.env):
+#### Frontend (client/.env):
 
 VITE_API_URL=http://localhost:5000
 
-## Backend (server/.env):
+#### Backend (server/.env):
 
 DATABASE_URL="mysql://user:password@localhost:3306/secure_test"
 PORT=5000
@@ -68,20 +68,20 @@ npx prisma migrate dev
 
 **5. Start the Application**
 
-### Run the Backend:
+#### Run the Backend:
 
 cd server
 npm start
 
-### Run the Frontend:
+#### Run the Frontend:
 
 cd client
 npm run dev
 
 **6. Access the Application
 **
-**Frontend:** http://localhost:5173
+#### **Frontend:** http://localhost:5173
 
-**Backend API: ** http://localhost:5000
+#### **Backend API: ** http://localhost:5000
 
 
