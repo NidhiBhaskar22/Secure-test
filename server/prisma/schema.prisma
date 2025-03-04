@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  UserID        Int       @id @default(autoincrement())
+  FirstName     String
+  LastName      String
+  Email         String    @unique
+  Password      String
+  Role          String
+  ActiveSession Boolean
+  Sessions      Session[] @relation("UserSessions")
+  UserTests     UserTest[]
+  TestsCreated  Test[]
+}
+
+model Session {
+  endTime           DateTime
+  id                Int           @id @default(autoincrement())
+  rejoinAllowed     Boolean       @default(false)
+  score             Int?
+  startTime         DateTime
+  status            SessionStatus @default(PENDING)
+  testId            Int
+  userId            Int
+  warningCount      Int           @default(0)
+  test              Test          @relation(fields: [testId], references: [TestID], onDelete: Cascade)
+  user              User          @relation(fields: [userId], references: [UserID], onDelete: Cascade, name: "UserSessions")
+  warningSessions   WarningSessions[]
+  questionAttempts  UserQuestionAttempt[]
+
+  @@index([userId, testId])
+  @@index([status])
+  @@index([testId], map: "Session_testId_fkey")
+}
+
+model Warning {
+  id                Int         @id @default(autoincrement())
+  warningType       WarningType
+  warningSessions   WarningSessions[]
+  @@index([warningType])
+}
+
+model Test {
+  TestID      Int       @id @default(autoincrement())
+  Title       String
+  Description String
+  Duration    Int
+  TotalMarks  Int
+  CreatedBy   Int
+  CreatedAt   DateTime  @default(now())
+  creator     User      @relation(fields: [CreatedBy], references: [UserID])
+  Sessions    Session[]
+  Questions   TestQuestionRelation[]
+  UserTests   UserTest[]
+}
+
+model Question {
+  id               Int                     @id @default(autoincrement())
+  questionText     String                  @db.Text
+  marks            Int
+  options          QuestionOption[]
+  tests            TestQuestionRelation[]
+  questionAttempts UserQuestionAttempt[]
+  correctOption    CorrectOption[]
+}
+
+model Option {
+  id              Int              @id @default(autoincrement())
+  optionText      String           @db.Text
+  questionOptions QuestionOption[]
+  chosenAttempts  UserQuestionAttempt[] @relation("chosenOption")
+  correctOptions  CorrectOption[]
+}
+
+model QuestionOption {
+  optionId    Int
+  questionId  Int
+  option      Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@id([optionId, questionId])
+  @@index([questionId])
+}
+
+model TestQuestionRelation {
+  questionId Int
+  testId     Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  test       Test     @relation(fields: [testId], references: [TestID], onDelete: Cascade)
+
+  @@id([testId, questionId])
+  @@index([testId])
+  @@index([questionId], map: "TestQuestionRelation_questionId_fkey")
+}
+
+model UserTest {
+  assignedAt DateTime @default(now())
+  testId     Int
+  userId     Int
+  test       Test     @relation(fields: [testId], references: [TestID], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [UserID], onDelete: Cascade)
+
+  @@id([testId, userId])
+  @@index([userId])
+}
+
+model WarningSessions {
+  sessionId Int
+  warningId Int
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  warning   Warning @relation(fields: [warningId], references: [id], onDelete: Cascade)
+
+  @@id([sessionId, warningId])
+  @@index([warningId])
+}
+
+model UserQuestionAttempt {
+  sessionId      Int
+  questionId     Int
+  chosenOptionId Int
+  timestamp      DateTime @default(now())
+  
+  session        Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  question       Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  chosenOption   Option   @relation(fields: [chosenOptionId], references: [id], onDelete: Cascade, name: "chosenOption")
+  
+  @@id([sessionId, questionId])
+  @@index([chosenOptionId])
+}
+
+model CorrectOption{
+  questionId Int @unique
+  optionId   Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  option     Option   @relation(fields: [optionId], references: [id], onDelete: Cascade)
+
+  @@id([questionId, optionId])
+  @@index([optionId])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum SessionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum WarningType {
+  TAB_SWITCH
+  COPY_PASTE
+  RIGHT_CLICK
+  INSPECT_ELEMENT
+  WINDOW_CHANGE
+}
